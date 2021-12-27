@@ -1,0 +1,23 @@
+{
+	"name": "Stop watching YouTube.",
+	"description": "I think you should stop watching YouTube.",
+	"version": "1",
+	"manifest_version": 2,
+	"background": {
+	  "scripts":["background.js"]
+	},
+	"content_scripts": [
+	  {
+		"matches": ["http://*/*", "https://*/*"],
+		"js": ["contentscript.js"]
+	  }
+	],
+	"permissions": [
+	  "tabs",
+	  "activeTab"
+	],
+	"browser_action": {
+		"default_popup": "popup.html"
+	},
+	"options_page": "options.html"
+  }
