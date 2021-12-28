@@ -1,6 +1,6 @@
 {
 	"name": "Stop watching YouTube.",
-	"description": "I think you should stop watching YouTube.",
+	"description": "Don't waste your time anymore.",
 	"version": "1",
 	"manifest_version": 2,
 	"background": {
