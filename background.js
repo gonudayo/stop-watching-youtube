@@ -10,6 +10,7 @@ function startButton() {
 
 function stopButton() {
   clearInterval(cron);
+  TIME = 0;
 }
 
 async function getCurrentTab() {
@@ -18,86 +19,99 @@ async function getCurrentTab() {
   return tab;
 }
 
-function updateTimer(){
+function updateTimer() {
   TIME++;
-  const checkMinutes = Math.floor(TIME/60); 
+  const checkMinutes = Math.floor(TIME / 60);
   const minutes = checkMinutes % 60;
 
-  // 시간 초과시 stop 메시지 발송
-  if(minutes >= limit) {
-    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+  // 시간 초과시 YouTube 종료
+  if (minutes > limit) {
+    chrome.windows.getAll({ populate: true }, function (windows) {
+      windows.forEach(function (window) {
+        window.tabs.forEach(function (tab) {
+          if (tab.url.indexOf("https://www.youtube.com/") !== -1) {
+            chrome.tabs.remove(tab.id, function () {});
+          }
+        });
+      });
+    });
+    TIME = 0;
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
       var currTab = tabs[0];
-      if (currTab !== undefined) { 
-        console.log(currTab)
-        chrome.tabs.sendMessage( currTab.id, {
-          message: 'stop'
-        })
-      }
+      chrome.tabs.sendMessage(currTab.id, {
+        message: "STOP WATCHING YOUTUBE",
+      });
     });
   }
-
-  // popup의 limit값 받아오기
-  chrome.runtime.onMessage.addListener(
-    function(request, sender, sendResponse) {
-        limit = request.msg;
-    }
-  );
-  
-  //popup에 time과 limit값 보내기
-  chrome.runtime.sendMessage({
-    msg: 'success',
-    data: {
-      time: TIME,
-      limit: limit
-    }
-  });
 }
 
+chrome.runtime.onConnect.addListener(function (port) {
+  if (port.name === "popup") {
+    //popup에 time과 limit값 보내기
+    chrome.runtime.sendMessage({
+      msg: "success",
+      data: {
+        time: TIME,
+        limit: limit,
+      },
+    });
+    // popup의 limit값 받아오기
+    chrome.runtime.onMessage.addListener(function (
+      request,
+      sender,
+      sendResponse
+    ) {
+      limit = request.msg;
+    });
+  }
+});
+
 // 시작할 때
-chrome.windows.getAll({populate:true},function(windows){
+chrome.windows.getAll({ populate: true }, function (windows) {
   let youtube = 0;
-  windows.forEach(function(window){
-    window.tabs.forEach(function(tab){
-      if(tab.url.indexOf('https://www.youtube.com/') !== -1) {
+  windows.forEach(function (window) {
+    window.tabs.forEach(function (tab) {
+      if (tab.url.indexOf("https://www.youtube.com/") !== -1) {
         youtube += 1;
-        if(youtube === 1) startButton();
+        if (youtube === 1) startButton();
       }
-      console.log(tab.url);
     });
   });
-  if(youtube === 0) stopButton();
+  if (youtube === 0) stopButton();
 });
 
 // tab을 열거나 업데이트 될 때
-chrome.tabs.onUpdated.addListener(function(tabId, info, tab) {
+chrome.tabs.onUpdated.addListener(function (tabId, info, tab) {
   let youtube = 0;
-  chrome.windows.getAll({populate:true},function(windows){
-    windows.forEach(function(window){
-      window.tabs.forEach(function(tab){
-        if(tab.url.indexOf('https://www.youtube.com/') !== -1) {
+  chrome.windows.getAll({ populate: true }, function (windows) {
+    windows.forEach(function (window) {
+      window.tabs.forEach(function (tab) {
+        if (tab.url.indexOf("https://www.youtube.com/") !== -1) {
           youtube += 1;
-          if(youtube === 1) startButton();
+          if (youtube === 1) startButton();
         }
-        console.log(tab.url);
       });
     });
   });
-  if(youtube === 0) stopButton();
+  if (youtube === 0) stopButton();
 });
 
 // tab을 닫을 때
-chrome.tabs.onRemoved.addListener(function(tabId, info) {
+chrome.tabs.onRemoved.addListener(function (tabId, info) {
   let youtube = 0;
-  chrome.windows.getAll({populate:true},function(windows){
-    windows.forEach(function(window){
-      window.tabs.forEach(function(tab){
-        if(tab.url.indexOf('https://www.youtube.com/') !== -1) {
+  chrome.windows.getAll({ populate: true }, function (windows) {
+    windows.forEach(function (window) {
+      window.tabs.forEach(function (tab) {
+        if (tab.url.indexOf("https://www.youtube.com/") !== -1) {
           youtube += 1;
-          if(youtube === 1) startButton();
+          if (youtube === 1) startButton();
         }
-        console.log(tab.url);
       });
     });
   });
-  if(youtube === 0) stopButton();
+  if (youtube === 0) stopButton();
+});
+
+chrome.webNavigation.onHistoryStateUpdated.addListener(function (details) {
+  chrome.tabs.executeScript(null, { file: "contentscript.js" });
 });
