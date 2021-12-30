@@ -1,6 +1,6 @@
 {
-  "name": "Stop watching YouTube.",
-  "description": "Don't waste your time anymore.",
+  "name": "유튜브 그만 봐!",
+  "description": "지정한 시간을 초과시 자동으로 유튜브가 종료됩니다. 더 이상 당신의 시간을 낭비하지 마세요.",
   "version": "1",
   "manifest_version": 2,
   "background": {
@@ -12,7 +12,7 @@
       "js": ["contentscript.js"]
     }
   ],
-  "permissions": ["tabs", "activeTab", "webNavigation", "<all_urls>"],
+  "permissions": ["tabs", "activeTab", "<all_urls>"],
   "browser_action": {
     "default_popup": "popup.html"
   },

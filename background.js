@@ -10,7 +10,6 @@ function startButton() {
 
 function stopButton() {
   clearInterval(cron);
-  TIME = 0;
 }
 
 async function getCurrentTab() {
@@ -21,6 +20,12 @@ async function getCurrentTab() {
 
 function updateTimer() {
   TIME++;
+  chrome.runtime.sendMessage({
+    backData: {
+      time: TIME,
+      limit: limit,
+    },
+  });
   const checkMinutes = Math.floor(TIME / 60);
   const minutes = checkMinutes % 60;
 
@@ -35,35 +40,45 @@ function updateTimer() {
         });
       });
     });
-    TIME = 0;
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
       var currTab = tabs[0];
       chrome.tabs.sendMessage(currTab.id, {
-        message: "STOP WATCHING YOUTUBE",
+        message: "유튜브 그만 봐!",
       });
     });
   }
 }
 
+// 페이지와 통신
 chrome.runtime.onConnect.addListener(function (port) {
-  if (port.name === "popup") {
-    //popup에 time과 limit값 보내기
-    chrome.runtime.sendMessage({
-      msg: "success",
-      data: {
-        time: TIME,
-        limit: limit,
-      },
-    });
-    // popup의 limit값 받아오기
-    chrome.runtime.onMessage.addListener(function (
-      request,
-      sender,
-      sendResponse
-    ) {
-      limit = request.msg;
-    });
-  }
+  // popup에 time과 limit값 보내기
+  chrome.runtime.sendMessage({
+    backData: {
+      time: TIME,
+      limit: limit,
+    },
+  });
+  // popup의 limit값 받아오기
+  chrome.runtime.onMessage.addListener(function (
+    request,
+    sender,
+    sendResponse
+  ) {
+    if (request.popupLimit) {
+      limit = request.popupLimit;
+    }
+  });
+
+  // 옵션 받아오기
+  chrome.runtime.onMessage.addListener(function (
+    request,
+    sender,
+    sendResponse
+  ) {
+    if (request.reset) {
+      TIME = 0;
+    }
+  });
 });
 
 // 시작할 때
@@ -110,8 +125,4 @@ chrome.tabs.onRemoved.addListener(function (tabId, info) {
     });
   });
   if (youtube === 0) stopButton();
-});
-
-chrome.webNavigation.onHistoryStateUpdated.addListener(function (details) {
-  chrome.tabs.executeScript(null, { file: "contentscript.js" });
 });
