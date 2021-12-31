@@ -13,12 +13,6 @@ function stopButton() {
   clearInterval(cron);
 }
 
-async function getCurrentTab() {
-  let queryOptions = { active: true, currentWindow: true };
-  let [tab] = await chrome.tabs.query(queryOptions);
-  return tab;
-}
-
 function updateTimer() {
   TIME++;
   chrome.runtime.sendMessage({
@@ -31,7 +25,7 @@ function updateTimer() {
   const minutes = checkMinutes % 60;
 
   // 시간 초과시 YouTube 종료 혹은 경고 메시지
-  if (TIME > limit) {
+  if (minutes > limit) {
     if (movementMethod === 1) {
       chrome.windows.getAll({ populate: true }, function (windows) {
         windows.forEach(function (window) {

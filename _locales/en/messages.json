@@ -1,0 +1,11 @@
+{
+  "locales": {
+    "message": "en"
+  },
+  "extension_name": {
+    "message": "Stop watching YouTube"
+  },
+  "extension_desc": {
+    "message": "YouTube will automatically shut down if it exceeds the specified time. Don't waste your time anymore."
+  }
+}
