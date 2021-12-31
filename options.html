@@ -2,12 +2,25 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <link rel="stylesheet" href="options.html" />
   </head>
-  <body>
+  <body style="text-align: center">
     <h1>당신의 시간은 소중합니다.</h1>
-    <button id="btn">초기화</button>
-    <span> 초기화 버튼을 누르면 유튜브 시청 시간이 초기화 됩니다.</span>
+    <br />
+    <h2>시간 초과시 동작 설정</h2>
+    <div>
+      <input type="radio" id="autoClose" name="radio" value="autoClose" />
+      <label for="autoClose">자동 종료</label>
+    </div>
+    <div>
+      <input type="radio" id="justAlert" name="radio" value="justAlert" />
+      <label for="justAlert">경고 메시지</label>
+    </div>
+    <br />
+    <div style="padding-top: 100px">
+      <button id="btn">초기화</button>
+      <span> 초기화 버튼을 누르면 유튜브 시청 시간이 초기화 됩니다.</span>
+    </div>
+
     <script src="options.js"></script>
   </body>
 </html>
