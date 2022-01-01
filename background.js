@@ -21,11 +21,9 @@ function updateTimer() {
       limit: limit,
     },
   });
-  const checkMinutes = Math.floor(TIME / 60);
-  const minutes = checkMinutes % 60;
 
   // 시간 초과시 YouTube 종료 혹은 경고 메시지
-  if (minutes > limit) {
+  if (Math.floor(TIME / 60) > limit) {
     if (movementMethod === 1) {
       chrome.windows.getAll({ populate: true }, function (windows) {
         windows.forEach(function (window) {
