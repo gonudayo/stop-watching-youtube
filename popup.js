@@ -2,17 +2,28 @@ chrome.runtime.connect({ name: "popup" });
 
 const timer = document.querySelector(".js-timer");
 let limit = 0;
+let pause = false;
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   if (request.backData) {
     let TIME = request.backData.time;
-    limit = request.backData.limit;
     const hours = Math.floor(TIME / 3600);
     const checkMinutes = Math.floor(TIME / 60);
     const seconds = TIME % 60;
     const minutes = checkMinutes % 60;
-    output.innerHTML = limit;
-    slider.value = limit;
+    if (request.backData.limit) {
+      limit = request.backData.limit;
+      output.innerHTML = limit;
+      slider.value = limit;
+    }
+    if (request.backData.pause !== undefined) {
+      pause = request.backData.pause;
+      if (pause) {
+        document.getElementById("ctrbtn").innerText = "재시작";
+      } else {
+        document.getElementById("ctrbtn").innerText = "일시정지";
+      }
+    }
     timer.innerText = `${hours < 10 ? `0${hours}` : hours}:${
       minutes < 10 ? `0${minutes}` : minutes
     }:${seconds < 10 ? `0${seconds}` : seconds}`;
@@ -21,6 +32,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
 var slider = document.getElementById("sldrRange");
 var output = document.getElementById("value");
+
 output.innerHTML = limit;
 
 slider.oninput = function () {
@@ -32,4 +44,16 @@ slider.oninput = function () {
 
 document.getElementById("btn").addEventListener("click", function () {
   chrome.runtime.openOptionsPage();
+});
+
+document.getElementById("ctrbtn").addEventListener("click", function () {
+  pause = !pause;
+  if (pause) {
+    document.getElementById("ctrbtn").innerText = "재시작";
+  } else {
+    document.getElementById("ctrbtn").innerText = "일시정지";
+  }
+  chrome.runtime.sendMessage({
+    popupPause: pause,
+  });
 });

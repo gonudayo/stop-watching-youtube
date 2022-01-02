@@ -1,5 +1,6 @@
 let TIME = 0; // 타이머 시간
 let limit = 30; // 시간 제한
+let pause = false; // 일시정지
 let cron; // clearInterval을 위한 변수
 let movementMethod = 1; // 동작 설정
 
@@ -14,11 +15,10 @@ function stopButton() {
 }
 
 function updateTimer() {
-  TIME++;
+  if (!pause) TIME++;
   chrome.runtime.sendMessage({
     backData: {
       time: TIME,
-      limit: limit,
     },
   });
 
@@ -57,9 +57,10 @@ chrome.runtime.onConnect.addListener(function (port) {
     backData: {
       time: TIME,
       limit: limit,
+      pause: pause,
     },
   });
-  // popup의 limit값 받아오기
+  // popup의 데이터 받아오기
   chrome.runtime.onMessage.addListener(function (
     request,
     sender,
@@ -67,6 +68,9 @@ chrome.runtime.onConnect.addListener(function (port) {
   ) {
     if (request.popupLimit) {
       limit = request.popupLimit;
+    }
+    if (request.popupPause !== undefined) {
+      pause = request.popupPause;
     }
   });
 

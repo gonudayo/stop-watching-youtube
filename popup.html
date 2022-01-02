@@ -6,7 +6,9 @@
   </head>
   <body class="menu">
     <h1>유튜브 그만 봐...</h1>
-    <button id="btn">옵션</button>
+    <div>
+      <button id="btn">옵션</button>
+    </div>
     <h2 class="timer js-timer">00:00:00</h2>
     <h2>제한 시간 설정: <span id="value"></span>min</h2>
     <div class="slidecontainer">
@@ -19,6 +21,11 @@
         class="slider"
         id="sldrRange"
       />
+    </div>
+    <div style="padding-bottom: 20px">
+      <button id="ctrbtn">일시정지</button>
+      <br />
+      자리를 비울 때만 사용하세요!
     </div>
     <script src="popup.js"></script>
   </body>
