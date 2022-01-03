@@ -33,8 +33,6 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 var slider = document.getElementById("sldrRange");
 var output = document.getElementById("value");
 
-output.innerHTML = limit;
-
 slider.oninput = function () {
   output.innerHTML = this.value;
   chrome.runtime.sendMessage({
@@ -47,13 +45,20 @@ document.getElementById("btn").addEventListener("click", function () {
 });
 
 document.getElementById("ctrbtn").addEventListener("click", function () {
-  pause = !pause;
-  if (pause) {
-    document.getElementById("ctrbtn").innerText = "재시작";
-  } else {
-    document.getElementById("ctrbtn").innerText = "일시정지";
+  if (timer.innerText === "00:00:00")
+    document.getElementById("ctrdsc").innerHTML =
+      "유튜브에 접속되어 있지 않습니다.";
+  else {
+    document.getElementById("ctrdsc").innerHTML =
+      "자리를 비울 때만 사용하세요!";
+    pause = !pause;
+    if (pause) {
+      document.getElementById("ctrbtn").innerText = "재시작";
+    } else {
+      document.getElementById("ctrbtn").innerText = "일시정지";
+    }
+    chrome.runtime.sendMessage({
+      popupPause: pause,
+    });
   }
-  chrome.runtime.sendMessage({
-    popupPause: pause,
-  });
 });
