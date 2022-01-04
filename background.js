@@ -23,7 +23,7 @@ function updateTimer() {
   });
 
   // 시간 초과시 YouTube 종료 혹은 경고 메시지
-  if (Math.floor(TIME / 60) > limit) {
+  if (TIME > limit * 60) {  
     if (movementMethod === 1) {
       chrome.windows.getAll({ populate: true }, function (windows) {
         windows.forEach(function (window) {
